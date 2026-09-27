@@ -15,7 +15,7 @@ def test_bad_tenure_is_422(client, good_row):
 
 def test_missing_field_is_422(client, good_row):
     row = dict(good_row)
-    del row["Contract"]
+    del row["Id"]
     assert client.post("/v1/predict", json=row).status_code == 422
 
 

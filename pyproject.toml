@@ -1,7 +1,7 @@
 [project]
-name = "churn-service"
-version = "0.4.7"
-description = "ML Pro 1 sem"
+name = "price-predicting-service"
+version = "0.1.2"
+description = "ML Pro 1 week homework"
 requires-python=">=3.11,<3.13"
 
 dependencies = [
@@ -28,7 +28,7 @@ requires = ["uv_build>=0.10,<0.11"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "churn"
+module-name = "price_predicting"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

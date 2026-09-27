@@ -1,26 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: churn-service
+  name: price-predicting
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: churn
+      app: price-predicting-service
   template:
     metadata:
       labels:
-        app: churn
+        app: price-predicting-service
     spec:
       containers:
         - name: api
-          image: churn-service:1.0
+          image: price-predicting-service:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
-          envFrom:
-            - configMapRef: {name: churn-config}
-            - secretRef: {name: churn-secrets}
           startupProbe:
             httpGet: {path: /health, port: 8000}
             failureThreshold: 30
