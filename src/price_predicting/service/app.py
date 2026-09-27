@@ -152,7 +152,7 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     except Exception as e:
         status_code = 500
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
-        raise HTTPException(status_code=status_code, detail=e)
+        #raise HTTPException(status_code=status_code, detail=e)
 
     finally:
         bg.add_task(db.save_prediction, request_id, payload, price, app.state.version, latency_ms, status_code)
