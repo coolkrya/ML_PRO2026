@@ -16,8 +16,16 @@ CREATE TABLE IF NOT EXISTS predictions (
 )
 """
 
+def db_is_up(db_url: str) -> bool:
+    try:
+        conn = psycopg.connect(db_url)
+        conn.close()
+        return True
+    except psycopg.OperationalError:
+        return False
+
 def init() -> None:
-    if not settings.database_url:
+    if not db_is_up(settings.database_url):
         return
     with psycopg.connect(settings.database_url) as conn:
         conn.execute("SELECT pg_advisory_xact_lock(7001)")
@@ -25,7 +33,7 @@ def init() -> None:
 
 
 def save_prediction(request_id : str, features : dict, price : float, model_version : str, latency_ms : float, answer_code: int) -> None:
-    if not settings.database_url:
+    if not db_is_up(settings.database_url):
         return
     with psycopg.connect(settings.database_url) as conn:
             conn.execute(

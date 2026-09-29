@@ -5,14 +5,13 @@ import pytest
 
 from price_predicting.config import settings
 
-DATABASE_URL = settings.database_url
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-'''
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.skipif(not DATABASE_URL, reason="нужен Postgres: задайте DATABASE_URL"),
 ]
-'''
+
 
 def test_prediction_is_logged(client, good_row):
     body = client.post("/v1/predict", json=good_row).json()
