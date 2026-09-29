@@ -106,6 +106,12 @@ class Prediction(BaseModel):
     latency_ms: float
     status_code: int
 
+class BatchPrediction(BaseModel):
+    batch_id: str
+    total_items: int
+    batch_latency_ms: float
+    results: list[Prediction]
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -152,17 +158,55 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
     except Exception as e:
         status_code = 500
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
-        #raise HTTPException(status_code=status_code, detail=e)
+        raise HTTPException(status_code=status_code, detail=e)
 
     finally:
         bg.add_task(db.save_prediction, request_id, payload, price, app.state.version, latency_ms, status_code)
 
     return Prediction(predicted_price=price, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms, status_code=status_code)
 
+@app.post("/v1/predict/batch")
+def predict_batch(items: list[Features], bg: BackgroundTasks) -> BatchPrediction:
+    
+    t0 = time.perf_counter()
+    batch_id = str(uuid.uuid4())
+    status_code = 200
+    results = []
+    
+    try:
+        payloads = [x.model_dump() for x in items]
+        frame = pd.DataFrame(payloads).reindex(columns=app.state.meta["features"])
 
-#@app.get("")
+        predictions = app.state.pipeline.predict(frame)
+
+        latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+  
+        for i, pred_value in enumerate(predictions):
+            row_request_id = str(uuid.uuid4())
+            row_payload = payloads[i]
+            row_price = float(pred_value)
+            results.append(Prediction(
+                    predicted_price=row_price,
+                    model_version=app.state.version,
+                    request_id=row_request_id,
+                    latency_ms=latency_ms,
+                    status_code=200
+                    )
+                )
+            bg.add_task(db.save_prediction, row_request_id, row_payload, row_price, app.state.version, latency_ms, status_code)
+
+    except Exception as e:
+        status_code = 500
+        latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+
+        raise HTTPException(status_code=500, detail=f"Batch prediction failed: {str(e)}")
 
 
-
+    return BatchPrediction(
+        batch_id=batch_id,
+        total_items=len(items),
+        batch_latency_ms=latency_ms,
+        results=results
+    )
 
 
