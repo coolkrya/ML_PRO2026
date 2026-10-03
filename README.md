@@ -122,6 +122,8 @@ docker compose down -v
 ```
 kind create cluster --name mlpro
 
+docker build -t price-predicting-service:1.0 .
+
 kind load docker-image price-predicting-service:1.0 --name mlpro
 
 kubectl apply -f k8s/
