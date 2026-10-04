@@ -87,7 +87,7 @@ class PredictUser(HttpUser):
             }
     
     
-    @task(5)
+    @task(0)
     def test_predict(self):
         
         with self.client.post("/v1/predict", json=self.payload(), catch_response=True) as response:
@@ -104,7 +104,7 @@ class PredictUser(HttpUser):
             else:
                 response.failure(f"Health check failed {response.status_code}: {response.text}")
 
-    @task(5)
+    @task(1)
     def test_predict_batch(self):
         batch_payload = [self.payload() for _ in range(500)]
         

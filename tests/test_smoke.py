@@ -8,7 +8,7 @@ def test_predict_smoke(client, good_row):
 
 
 def test_predict_handles_missing_total_charges(client, good_row):
-    r = client.post("/v1/predict", json={**good_row, "Id": None})
+    r = client.post("/v1/predict", json={**good_row, "Alley": None})
     assert r.status_code == 200
 
 

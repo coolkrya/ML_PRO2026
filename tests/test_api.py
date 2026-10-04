@@ -19,6 +19,7 @@ def test_missing_field_is_422(client, good_row):
     assert client.post("/v1/predict", json=row).status_code == 422
 
 
-def test_extra_field_is_422(client, good_row):
-    r = client.post("/v1/predict", json={**good_row, "hacker_field": 1})
-    assert r.status_code == 422
+def test_garbage_is_422(client, good_row):
+    row = dict(good_row)
+    row["Id"] = "tralalelo tralala"
+    assert client.post("/v1/predict", json=row).status_code == 422

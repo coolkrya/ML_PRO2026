@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS predictions (
     request_id      uuid PRIMARY KEY,
     ts      timestamptz NOT NULL DEFAULT now(),
     model_version       text NOT NULL,
-    features        jsonb NOT NULL,
-    predicted_price       double precision NOT NULL,
+    features        jsonb,
+    predicted_price       double precision ,
     latency_ms real,
     answer_code integer NOT NULL
 )

@@ -49,7 +49,6 @@ categorical_columns = [
     "SaleCondition",
 ]
 quantitive_columns = [
-    "Id",
     "MSSubClass",
     "LotFrontage",
     "LotArea",
