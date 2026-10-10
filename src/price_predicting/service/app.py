@@ -241,18 +241,21 @@ def predict_batch(items: list[Features], bg: BackgroundTasks) -> BatchPrediction
                 )
             bg.add_task(db.save_prediction, row_request_id, row_payload, row_price, app.state.version, latency_ms, status_code)
 
+        return BatchPrediction(
+                    batch_id=batch_id,
+                    total_items=len(items),
+                    batch_latency_ms=latency_ms,
+                    results=results
+                )
+
     except Exception as e:
         status_code = 500
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
 
+        bg.add_task(db.save_prediction, row_request_id, None, None, app.state.version, latency_ms, status_code)
+
         raise HTTPException(status_code=500, detail="Internal error")
 
-    finally:
-        return BatchPrediction(
-            batch_id=batch_id,
-            total_items=len(items),
-            batch_latency_ms=latency_ms,
-            results=results
-        )
+
 
 
