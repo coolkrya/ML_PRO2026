@@ -94,6 +94,9 @@ jobs:
           kubectl apply -f k8s/
           kubectl set image deploy/price-predicting api="$IMAGE"
           kubectl rollout status deploy/price-predicting --timeout=120s
+          sleep 10
+          kubectl exec deploy/postgres -- psql -U postgres -d predictions \
+              -tc "SELECT 1 FROM predictions"
 
       - name: smoke
         run: |
