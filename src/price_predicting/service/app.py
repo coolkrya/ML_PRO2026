@@ -161,7 +161,7 @@ async def custom_validation_handler(request: Request, exc: RequestValidationErro
             latency_ms=0,
             answer_code=status_code
         )
-    except Exception as e:
+    except Exception:
         pass
     
     return PlainTextResponse('', status_code=422)
@@ -199,18 +199,18 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
         #raise Exception()
 
         bg.add_task(db.save_prediction, request_id, payload, price, app.state.version, latency_ms, status_code)
+
+        return Prediction(predicted_price=price, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms, status_code=status_code)
+            
   
-    except Exception as e:
+    except Exception:
         status_code = 500
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
 
         bg.add_task(db.save_prediction, request_id, payload, price, app.state.version, latency_ms, status_code)
 
-        raise HTTPException(status_code=500, detail="Internal error")
+        raise HTTPException(status_code=500, detail="Internal error") from None
 
-    finally:
-        return Prediction(predicted_price=price, model_version=app.state.version, request_id=request_id, latency_ms=latency_ms, status_code=status_code)
-    
 
 @app.post("/v1/predict/batch")
 def predict_batch(items: list[Features], bg: BackgroundTasks) -> BatchPrediction:
@@ -249,13 +249,13 @@ def predict_batch(items: list[Features], bg: BackgroundTasks) -> BatchPrediction
                     results=results
                 )
 
-    except Exception as e:
+    except Exception:
         status_code = 500
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
 
         bg.add_task(db.save_prediction, row_request_id, None, None, app.state.version, latency_ms, status_code)
 
-        raise HTTPException(status_code=500, detail="Internal error")
+        raise HTTPException(status_code=500, detail="Internal error") from None
 
 
 

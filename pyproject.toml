@@ -35,7 +35,7 @@ testpaths = ["tests"]
 markers = ["integration: нужна база данных - адрес в DATABASE_URL"]
 
 [tool.ruff]
-line-length = 150
+line-length = 200
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

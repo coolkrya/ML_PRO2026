@@ -3,8 +3,6 @@ import os
 import psycopg
 import pytest
 
-from price_predicting.config import settings
-
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 pytestmark = [
