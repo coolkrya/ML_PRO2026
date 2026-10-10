@@ -7,7 +7,7 @@ import joblib
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from price_predicting import db
@@ -164,7 +164,14 @@ async def custom_validation_handler(request: Request, exc: RequestValidationErro
     except Exception:
         pass
     
-    return PlainTextResponse('', status_code=422)
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": "Validation failed",
+            "request_id": request_id,
+            "details": exc.errors()  
+        }
+    )
 
 
 

@@ -24,7 +24,7 @@ def test_prediction_is_logged(client, good_row):
     assert row is not None
     assert row[0] == body["model_version"]
     assert row[1] == pytest.approx(body["predicted_price"])
-    assert row[-1] == 400
+    assert row[-1] == 200
 
 def test_prediction_422_is_logged(client, good_row):
     body = client.post("/v1/predict", json={}).json()
@@ -36,6 +36,6 @@ def test_prediction_422_is_logged(client, good_row):
             (body["request_id"],),
         ).fetchone()
 
-
+    assert row is not None
     assert row[-1] == 422
 
