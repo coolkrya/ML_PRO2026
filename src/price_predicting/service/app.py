@@ -135,6 +135,7 @@ async def lifespan(app: FastAPI):
     app.state.pipeline = bundle["pipeline"]
     app.state.meta = bundle["metadata"]
     app.state.version = bundle["metadata"]["version"]
+    app.state.log_level = settings.log_level
 
     db.init()
     yield
@@ -177,7 +178,7 @@ async def custom_validation_handler(request: Request, exc: RequestValidationErro
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model_version": getattr(app.state, "version", "unknown")}
+    return {"status": "ok", "model_version": getattr(app.state, "version", "unknown"), "log_level": getattr(app.state, "log_level", "ERROR")}
 
 @app.get("/ready")
 def ready():
