@@ -106,7 +106,7 @@ jobs:
           curl --fail -s localhost:8080/health; echo
           curl ‐‐fail ‐s ‐X POST localhost:8080/v1/predict \
             ‐H "Content‐Type: application/json" ‐d @good.json \
-          | python3 ‐c "import json,sys; r=json.load(sys.stdin); assert 0 <= r['predicted_price'], r"
+            | python3 ‐c "import json,sys; r=json.load(sys.stdin); assert 0 <= r['predicted_price'], r"
       
       - name: диагностика
         if: failure()
