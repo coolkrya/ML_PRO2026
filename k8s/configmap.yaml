@@ -4,4 +4,4 @@ metadata:
   name: config
 data:
   LOG_LEVEL: "INFO_FOR_K8S_CLUSTER"
-  MODEL_PATH: artifact/vabulabdabdab.0.joblib
+  MODEL_PATH: artifact/model_1.0.joblib
