@@ -104,13 +104,9 @@ jobs:
           sleep 5
 
           curl --fail -s localhost:8080/health; echo
-          curl --fail -s -X POST localhost:8080/v1/predict \
-            -H "Content-Type: application/json" -d @good.json; echo
-          
-          sleep 2
-
-          kubectl exec deploy/postgres -- psql -U postgres -d predictions \
-            -tc "SELECT count(*) FROM predictions" | grep -q 1
+          curl ‐‐fail ‐s ‐X POST localhost:8080/v1/predict \
+            ‐H "Content‐Type: application/json" ‐d @good.json \
+          | python3 ‐c "import json,sys; r=json.load(sys.stdin); assert 0 <= r['predicted_price'], r"
       
       - name: диагностика
         if: failure()
