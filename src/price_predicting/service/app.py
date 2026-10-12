@@ -142,7 +142,7 @@ async def lifespan(app: FastAPI):
     app.state.pipeline = None
 
 
-#app = FastAPI(title="House price prediction", version="1.0", lifespan=lifespan)
+app = FastAPI(title="House price prediction", version="1.0", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
