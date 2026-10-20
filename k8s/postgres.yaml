@@ -22,7 +22,7 @@ spec:
               value: predictions
             - name: POSTGRES_PASSWORD
               valueFrom:
-                secretKeyRef: {name: secrets, key: POSTGRES_PASSWORD}
+                secretKeyRef: {name: secrets, key: DB_PASSWORD}
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "postgres"]
