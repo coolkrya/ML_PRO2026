@@ -6,3 +6,6 @@
 .env
 data/
 .csv
+.DS_store
+
+!house_prices.csv
