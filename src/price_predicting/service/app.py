@@ -11,7 +11,6 @@ from pydantic import BaseModel, Field
 
 from price_predicting import db
 from price_predicting.config import settings
-from price_predicting.model_store import load_model
 
 #import joblib
 #dubinskiy dub
@@ -132,7 +131,10 @@ class BatchPrediction(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.pipeline, app.state.meta, app.state.version = load_model()
+    bundle = joblib.load(settings.model_path)
+    app.state.pipeline = bundle["pipeline"]
+    app.state.meta = bundle["metadata"]
+    app.state.version = bundle["metadata"]["version"]
     app.state.log_level = settings.log_level
 
     db.init()
