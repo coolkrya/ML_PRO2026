@@ -95,6 +95,17 @@ jobs:
           --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/predictions" \
           --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Debug secret length
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          if [ -z "$DB_PASSWORD" ]; then
+            echo "::error:: DB_PASSWORD empty"
+            exit 1
+          else
+            echo "ok"
+          fi
+
       - name: база
         run: |
           kubectl apply -f k8s/postgres.yaml
