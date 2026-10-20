@@ -85,7 +85,7 @@ jobs:
 
       - name: образ в кластер
         run: |
-          docker pull "$IMAGE"
+          docker pull --platform linux/arm64 "$IMAGE"
           kind load docker-image "$IMAGE" --name "$KIND_CLUSTER"
 
       - name: подтягиваем секреты
