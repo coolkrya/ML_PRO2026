@@ -3,6 +3,7 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import Literal
 
+import joblib
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -12,7 +13,6 @@ from pydantic import BaseModel, Field
 from price_predicting import db
 from price_predicting.config import settings
 
-#import joblib
 #dubinskiy dub
 
 class Features(BaseModel):
