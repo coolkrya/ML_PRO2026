@@ -19,8 +19,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:test@localhost:5432/predictions
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
         with: {enable-cache: true}
       - run: uv sync --frozen
       - run: uv run ruff check .
@@ -29,10 +29,10 @@ jobs:
   build:
     needs: tests
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, kind]
     permissions: {contents: read, packages: write}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       
       - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:sha-${GITHUB_SHA}" >> "$GITHUB_ENV"
       
@@ -42,15 +42,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - uses: docker/setup-qemu-action@v3
-      
       - uses: docker/setup-buildx-action@v4
       
       - uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: ${{ env.IMAGE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -66,7 +64,7 @@ jobs:
       KIND_CLUSTER: sem3
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:sha-${GITHUB_SHA}" >> "$GITHUB_ENV"
       - uses: docker/login-action@v4
         with:
@@ -77,15 +75,15 @@ jobs:
       - name: kind, kubectl и доступ к кластеру
         run: |
           B=~/.local/bin && mkdir -p $B && echo "$B" >> "$GITHUB_PATH"
-          [ -x $B/kind ] || curl -sSLo $B/kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
-          [ -x $B/kubectl ] || curl -sSLo $B/kubectl https://dl.k8s.io/v1.37.0/bin/linux/amd64/kubectl
+          [ -x $B/kind ] || curl -sSLo $B/kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
+          [ -x $B/kubectl ] || curl -sSLo $B/kubectl https://dl.k8s.io/v1.31.0/bin/linux/amd64/kubectl
           chmod +x $B/kind $B/kubectl
           $B/kind export kubeconfig --name "$KIND_CLUSTER" --internal
           $B/kubectl get nodes
 
       - name: образ в кластер
         run: |
-          docker pull --platform linux/arm64 "$IMAGE"
+          docker pull "$IMAGE"
           kind load docker-image "$IMAGE" --name "$KIND_CLUSTER"
 
       - name: подтягиваем секреты
