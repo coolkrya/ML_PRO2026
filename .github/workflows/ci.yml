@@ -74,8 +74,6 @@ jobs:
 
       - name: kind, kubectl и доступ к кластеру
         run: |
-                - name: kind, kubectl и доступ к кластеру
-        run: |
           B=~/.local/bin && mkdir -p $B && echo "$B" >> "$GITHUB_PATH"
           ARCH=$(uname -m)
           if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
