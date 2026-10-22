@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field
 from price_predicting import db
 from price_predicting.config import settings
 
-#dubinskiy dub
 
 class Features(BaseModel):
     model_config = {"extra": "forbid"}
