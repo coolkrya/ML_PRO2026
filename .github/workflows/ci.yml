@@ -74,11 +74,24 @@ jobs:
 
       - name: kind, kubectl и доступ к кластеру
         run: |
+                - name: kind, kubectl и доступ к кластеру
+        run: |
           B=~/.local/bin && mkdir -p $B && echo "$B" >> "$GITHUB_PATH"
-          [ -x $B/kind ] || curl -sSLo $B/kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
-          [ -x $B/kubectl ] || curl -sSLo $B/kubectl https://dl.k8s.io/v1.31.0/bin/linux/amd64/kubectl
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            KIND_ARCH="arm64"
+            K8S_ARCH="arm64"
+          else
+            KIND_ARCH="amd64"
+            K8S_ARCH="amd64"
+          fi
+          
+          [ -x $B/kind ] || curl -sSLo $B/kind "https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-${KIND_ARCH}"
+          [ -x $B/kubectl ] || curl -sSLo $B/kubectl "https://dl.k8s.io/v1.31.0/bin/linux/${K8S_ARCH}/kubectl"
+          
           chmod +x $B/kind $B/kubectl
-          $B/kind export kubeconfig --name "$KIND_CLUSTER" --internal
+          s
+          $B/kind export kubeconfig --name "${KIND_CLUSTER:-sem3}" --internal
           $B/kubectl get nodes
 
       - name: образ в кластер
