@@ -88,7 +88,7 @@ jobs:
           [ -x $B/kubectl ] || curl -sSLo $B/kubectl "https://dl.k8s.io/v1.31.0/bin/linux/${K8S_ARCH}/kubectl"
           
           chmod +x $B/kind $B/kubectl
-          s
+          
           $B/kind export kubeconfig --name "${KIND_CLUSTER:-sem3}" --internal
           $B/kubectl get nodes
 
