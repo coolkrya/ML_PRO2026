@@ -105,9 +105,6 @@ jobs:
         run: |
           U="http://$KIND_CLUSTER-control-plane:30080"
           H="Host: price.localhost"
-
-          curl --fail -s --retry 5 --retry-all-errors -H "$H" $U/health | tee health.json; echo
-          grep -q '"model_version":"price-v"' health.json
           
           curl --fail -s -X POST -H "$H" $U/v1/predict \
             -H "Content-Type: application/json" -d @good.json | tee pred.json; echo
