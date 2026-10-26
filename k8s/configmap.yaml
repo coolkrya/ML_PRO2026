@@ -5,3 +5,4 @@ metadata:
 data:
   LOG_LEVEL: "INFO_FOR_K8S_CLUSTER"
   MODEL_PATH: artifact/model_1.0.joblib
+  DATABASE_URL: postgresql://postgres:test@postgres:5432/predictions
