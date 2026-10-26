@@ -1,6 +1,6 @@
 """Обучение модели предсказания цены: проверка данных, обучение, запись в MLflow, регистрация и гейт.
 
-  MLFLOW_TRACKING_URI=http://127.0.0.1:5000 uv run python -m price.train
+  MLFLOW_TRACKING_URI=http://mlflow.localhost uv run python -m price_predicting.train
 
 Новая версия всегда получает алиас challenger. Алиас champion она получает, только если
 R2 на отложенной выборке лучше, чем у текущего champion (или champion ещё нет).
