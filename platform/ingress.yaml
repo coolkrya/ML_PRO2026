@@ -35,7 +35,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: price-predicting-service
+  name: price-predicting
 spec:
   ingressClassName: traefik
   rules:
@@ -45,7 +45,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              service: {name: price-predicting-service, port: {number: 80}}
+              service: {name: price-predicting, port: {number: 80}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
