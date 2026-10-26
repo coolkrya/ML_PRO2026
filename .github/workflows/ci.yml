@@ -29,26 +29,21 @@ jobs:
   build:
     needs: tests
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, kind]
+    runs-on: ubuntu-latest
     permissions: {contents: read, packages: write}
     steps:
       - uses: actions/checkout@v7
-      
       - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:sha-${GITHUB_SHA}" >> "$GITHUB_ENV"
-      
       - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
       - uses: docker/setup-buildx-action@v4
-      
       - uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          platforms: linux/arm64
           tags: ${{ env.IMAGE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -75,21 +70,10 @@ jobs:
       - name: kind, kubectl и доступ к кластеру
         run: |
           B=~/.local/bin && mkdir -p $B && echo "$B" >> "$GITHUB_PATH"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-            KIND_ARCH="arm64"
-            K8S_ARCH="arm64"
-          else
-            KIND_ARCH="amd64"
-            K8S_ARCH="amd64"
-          fi
-          
-          [ -x $B/kind ] || curl -sSLo $B/kind "https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-${KIND_ARCH}"
-          [ -x $B/kubectl ] || curl -sSLo $B/kubectl "https://dl.k8s.io/v1.31.0/bin/linux/${K8S_ARCH}/kubectl"
-          
+          [ -x $B/kind ] || curl -sSLo $B/kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
+          [ -x $B/kubectl ] || curl -sSLo $B/kubectl https://dl.k8s.io/v1.37.0/bin/linux/amd64/kubectl
           chmod +x $B/kind $B/kubectl
-          
-          $B/kind export kubeconfig --name "${KIND_CLUSTER:-sem3}" --internal
+          $B/kind export kubeconfig --name "$KIND_CLUSTER" --internal
           $B/kubectl get nodes
 
       - name: образ в кластер
@@ -105,17 +89,6 @@ jobs:
           --from-literal=POSTGRES_PASSWORD="$DB_PASSWORD" \
           --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/predictions" \
           --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Debug secret length
-        env:
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: |
-          if [ -z "$DB_PASSWORD" ]; then
-            echo "::error:: DB_PASSWORD empty"
-            exit 1
-          else
-            echo "ok"
-          fi
 
       - name: база
         run: |
