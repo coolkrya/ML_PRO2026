@@ -7,4 +7,4 @@ data:
   MODEL_PATH: artifact/model_1.0.joblib
   MLFLOW_TRACKING_URI: http://mlflow.mlops:5000
   MODEL_NAME: house_price
-  MODEL_ALIAS: sdfghjkhgfdghjkjhgf
+  MODEL_ALIAS: champion
