@@ -39,7 +39,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: price.localhost
+    - host: tochno-ne-price.localhost
       http:
         paths:
           - path: /
