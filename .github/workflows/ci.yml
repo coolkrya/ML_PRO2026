@@ -56,7 +56,7 @@ jobs:
     timeout-minutes: 10
     permissions: {contents: read, packages: read}
     env:
-      KIND_CLUSTER: brakodabra
+      KIND_CLUSTER: sem3
 
     steps:
       - uses: actions/checkout@v7
