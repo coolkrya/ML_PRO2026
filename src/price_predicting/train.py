@@ -5,6 +5,7 @@
 Новая версия всегда получает алиас challenger. Алиас champion она получает, только если
 R2 на отложенной выборке лучше, чем у текущего champion (или champion ещё нет).
 """
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -27,8 +28,10 @@ DATA_PATH = Path(os.getenv("DATA_PATH", "datasets/house_prices.csv"))
 MODEL_NAME = os.getenv("MODEL_NAME", "house_price")
 EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT", "house_price")
 LEARNING_RATE = float(os.getenv("LEARNING_RATE", "0.1"))
+N_ESTIMATORS = int(os.getenv("N_ESTIMATORS", "10"))
 MIN_GAIN = float(os.getenv("GATE_MIN_GAIN", "0.01"))  
 SEED = 42
+
 
 SKOPS_TRUSTED = [
     "numpy.dtype",
@@ -101,13 +104,13 @@ def load_and_validate(path: Path) -> pd.DataFrame:
     return df
 
 
-def build_pipeline(learning_rate: float) -> Pipeline:
+def build_pipeline(learning_rate: float, n_estimators: int) -> Pipeline:
     return Pipeline([
         ("preprocessing", preprocessor),
         ("model", GradientBoostingRegressor(
             learning_rate=learning_rate, 
             random_state=SEED,
-            n_estimators=10  
+            n_estimators=n_estimators  
         ))
     ])
 
@@ -133,7 +136,7 @@ def main() -> dict:
         df[features], df["SalePrice"], test_size=0.2, random_state=SEED
     )
 
-    pipeline = build_pipeline(LEARNING_RATE).fit(x_train, y_train)
+    pipeline = build_pipeline(LEARNING_RATE, N_ESTIMATORS).fit(x_train, y_train)
     preds = pipeline.predict(x_test)
     
     rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
@@ -152,9 +155,11 @@ def main() -> dict:
         
         mlflow.log_params({
             "learning_rate": LEARNING_RATE,
+            "n_estimators": N_ESTIMATORS,
             "model": "GradientBoostingRegressor",
             "seed": SEED,
-            "data": str(DATA_PATH)
+            "data": str(DATA_PATH),
+            "data_md5": hashlib.md5(DATA_PATH.read_bytes()).hexdigest()
         })
         
         mlflow.log_metrics({"rmse": rmse, "r2": r2})
