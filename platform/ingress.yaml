@@ -39,13 +39,13 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: tochno-ne-price.localhost
+    - host: price.localhost
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
-              service: {name: price-predicting, port: {number: 80}}
+              service: {name: price-predicting-service, port: {number: 80}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
